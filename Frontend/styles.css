@@ -58,7 +58,7 @@ h1 {
   background-color: #0056b3;
 }
 .output {
-  max-width: 80%;
+  max-width: 90%;
   margin: auto;
   margin-top: 2%;
   padding: 10px;
@@ -73,6 +73,7 @@ h1 {
 }
 .table-container {
   overflow-x: scroll;
+ 
 }
 .table-container {
   border: 1px solid #ccc;
@@ -108,7 +109,8 @@ td:last-child {
 thead th {
   padding: 8px;
   border-bottom: 1px solid #ccc;
-  background-color: #f2f2f2;
+  background-color: #488a3e;
+  color: #ffffff;
 }
 
 /* Add spacing between rows */

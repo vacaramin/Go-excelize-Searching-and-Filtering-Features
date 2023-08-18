@@ -22,23 +22,22 @@ processBtn.addEventListener("click", async () => {
 
     const firstRow = result[0];
     const headerKeys = Object.keys(firstRow.cells);
-    const headerRow = document.createElement("tr");
-    headerKeys.forEach((key) => {
-      const headerCell = document.createElement("th");
-      headerCell.textContent = key;
-      headerRow.appendChild(headerCell);
-    });
-    tableHead.appendChild(headerRow);
+    
 
     // Populate the table body with the received JSON data
-    result.forEach((row) => {
+    result.forEach((row, index) => {
       const rowElement = document.createElement("tr");
       headerKeys.forEach((key) => {
-        const cellElement = document.createElement("td");
+        const cellElement = document.createElement(index === 0 ? "th" : "td");
         cellElement.textContent = row.cells[key];
         rowElement.appendChild(cellElement);
       });
-      tableBody.appendChild(rowElement);
+      
+      if (index === 0) {
+        tableHead.appendChild(rowElement);
+      } else {
+        tableBody.appendChild(rowElement);
+      }
     });
   } catch (error) {
     console.error("Error processing Excel:", error);
