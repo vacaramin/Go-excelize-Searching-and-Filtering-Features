@@ -45,15 +45,15 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	var rows []ExcelRow
 
 	// Iterate through the rows and build the response data
-	for _, sheet := range xlFile.Sheets {
-		for _, row := range sheet.Rows[:5] {
-			var rowCells []string
-			for _, cell := range row.Cells {
-				rowCells = append(rowCells, cell.String())
-			}
-			rows = append(rows, ExcelRow{Cells: rowCells})
+
+	for _, row := range xlFile.Sheets[0].Rows[:5] {
+		var rowCells []string
+		for _, cell := range row.Cells {
+			rowCells = append(rowCells, cell.String())
 		}
+		rows = append(rows, ExcelRow{Cells: rowCells})
 	}
+
 	// Marshal the response data into JSON
 	jsonData, err := json.Marshal(rows)
 	if err != nil {

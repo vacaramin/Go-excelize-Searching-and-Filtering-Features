@@ -1,3 +1,8 @@
+const excelFileInput = document.getElementById("excelFileInput");
+const processBtn = document.getElementById("processBtn");
+const tableBody = document.getElementById("tableBody");
+const tableHead = document.getElementById("tableHead");
+
 processBtn.addEventListener("click", async () => {
   // Prepare the FormData object to include the selected file
   const formData = new FormData();
@@ -13,18 +18,17 @@ processBtn.addEventListener("click", async () => {
 
     // Clear the existing table rows and header
     tableBody.innerHTML = "";
-    const table = document.querySelector("table");
-    table.innerHTML = ""; // Clear the table contents
+    tableHead.innerHTML = ""; // Clear the table header
 
-    // Populate the table header with the keys from the JSON response
+    const firstRow = result[0];
+    const headerKeys = Object.keys(firstRow.cells);
     const headerRow = document.createElement("tr");
-    const headerKeys = Object.keys(result[0].cells);
     headerKeys.forEach((key) => {
       const headerCell = document.createElement("th");
       headerCell.textContent = key;
       headerRow.appendChild(headerCell);
     });
-    table.appendChild(document.createElement("thead")).appendChild(headerRow);
+    tableHead.appendChild(headerRow);
 
     // Populate the table body with the received JSON data
     result.forEach((row) => {
@@ -34,7 +38,7 @@ processBtn.addEventListener("click", async () => {
         cellElement.textContent = row.cells[key];
         rowElement.appendChild(cellElement);
       });
-      table.appendChild(document.createElement("tbody")).appendChild(rowElement);
+      tableBody.appendChild(rowElement);
     });
   } catch (error) {
     console.error("Error processing Excel:", error);
