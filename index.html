@@ -11,8 +11,24 @@
     <h1>Excel File Processing</h1>
     <input type="file" id="excelFileInput" class="file-input" accept=".xls, .xlsx">
     <button id="processBtn" class="btn">Process Excel</button>
+    
+  </div>
+  <div>
     <div class="output" id="outputDiv">
-      <!-- Output will be displayed here -->
+      <div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Serial Number</th>
+        <th>File Name</th>
+        <!-- Add more headers if needed -->
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- Table rows will be dynamically added here -->
+    </tbody>
+  </table>
+</div>
     </div>
   </div>
   <script src="script.js"></script>
