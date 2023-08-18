@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"io"
+	"fmt"
 	"net/http"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Helloworld")
+func Home(w http.ResponseWriter, _ *http.Request) {
+	fmt.Fprint(w, "Helloworld")
 }
