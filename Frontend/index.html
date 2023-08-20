@@ -1,33 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Excel File Processing</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Excel File Processing</h1>
-    <input type="file" id="excelFileInput" class="file-input" accept=".xls, .xlsx">
-    <button id="processBtn" class="btn">Process Excel</button>
-    
-  </div>
-  <div>
-    <div class="output" id="outputDiv">
-      <div class="table-container">
-  <table>
-    <thead id="tableHead"> 
-      <!-- Table Header will be dynamically added here -->
-
-    </thead>
-    <tbody id="tableBody">
-      <!-- Table rows will be dynamically added here -->
-    </tbody>
-  </table>
-</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel File Processing</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Excel File Processing</h1>
+      <input
+        type="file"
+        id="excelFileInput"
+        class="file-input"
+        accept=".xls, .xlsx"
+      />
+      <label for="filterRow">Filter Rows</label>
+      <input type="checkbox" id="filterRow" name="filters" value="#F#" />
+      <label for="mainFilterField">Main Filter Field</label>
+      <input type="checkbox" id="mainFilterField" name="filters" value="#FM#" />
+      <br>
+      <br>
+      <br>
+      
+      <button id="processBtn" class="btn">Process Excel</button>
     </div>
-  </div>
-  <script src="script.js"></script>
-</body>
+    <div>
+      <div class="output" id="outputDiv">
+        <div class="table-container">
+          <table>
+            <thead id="tableHead">
+              <!-- Table Header will be dynamically added here -->
+            </thead>
+            <tbody id="tableBody">
+              <!-- Table rows will be dynamically added here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
 </html>
