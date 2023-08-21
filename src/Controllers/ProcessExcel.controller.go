@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/xuri/excelize/v2"
 )
 
 type ExcelRow struct {
@@ -18,12 +20,6 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	fmt.Println("Process Excel Request received")
-	file, _, err := r.FormFile("excelFile")
-	if err != nil {
-		http.Error(w, "Error getting file", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
 
 	file, header, err := r.FormFile("excelFile")
 	if err != nil {
@@ -33,24 +29,33 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	fmt.Printf("File Name: %s, Size: %d\n", header.Filename, header.Size)
-
-	// Read and print the first 5 rows from the Excel file
-	//xlFile, err := xlsx.OpenReaderAt(file, header.Size)
-	// if err != nil {
-	// 	http.Error(w, "Error reading Excel file: "+err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
+	xlFile, err := excelize.OpenReader(file)
+	if err != nil {
+		http.Error(w, "Error reading Excel file: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 	var rows []ExcelRow
 
 	// Iterate through the rows and build the response data
+	rowsLimit := 5 // Change this to the desired number of rows to process
 
-	//for _, row := range xlFile.Sheets[0].Rows[:5] {
-	// 	var rowCells []string
-	// 	for _, cell := range row.Cells {
-	// 		rowCells = append(rowCells, cell.String())
-	// 	}
-	// 	rows = append(rows, ExcelRow{Cells: rowCells})
-	// }
+	sheetName := xlFile.GetSheetName(0)
+
+	rowsData, err := xlFile.GetRows(sheetName)
+	if err != nil {
+		http.Error(w, "Error getting rows: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for rowIndex, row := range rowsData {
+		if rowIndex >= rowsLimit {
+			break
+		}
+
+		rowCells := append([]string{}, row...)
+
+		rows = append(rows, ExcelRow{Cells: rowCells})
+	}
 
 	// Marshal the response data into JSON
 	jsonData, err := json.Marshal(rows)
@@ -60,6 +65,7 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Write the JSON response
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonData)
 
 }
