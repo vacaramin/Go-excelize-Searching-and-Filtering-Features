@@ -128,10 +128,15 @@ td:last-child {
   font-weight: bold;
   text-align: center;
   margin: 20px;
-  border: 3px solid red;
-  background-color: red;
-  border-radius: 30px;
-
+  border: 3px solid rgb(206, 132, 132);
+  background-color: rgb(151, 50, 50);
+  border-radius: 100px;
+  width: 40%;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .error-message:hover{
   opacity: 0.5;

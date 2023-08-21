@@ -14,6 +14,10 @@ import (
 type ExcelRow struct {
 	Cells []string `json:"cells"`
 }
+type Filter_Column struct {
+	ColumnName string `json:"columnname"`
+	FilterName string `json:"filtername"`
+}
 
 // ProcessExcel This is the main function that takes the excel and implements all the required logic on the excel and returns an searched and filtered excel
 func ProcessExcel(w http.ResponseWriter, r *http.Request) {
@@ -47,8 +51,8 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	rowsLimit := 5 // Change this to the desired number of rows to process
 
 	sheetName := xlFile.GetSheetName(0)
-
-	for i, j := 1, ""; i <= 1000; i++ {
+	// Checking First column and it's filters
+	for i, j := 1, ""; i <= 25; i++ {
 		j = strconv.FormatInt(int64(i), 10)
 		cell, err := xlFile.GetCellValue(sheetName, "A"+j)
 		if err != nil {
@@ -59,6 +63,22 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 		}
 		if cell != "" && cell[0] != '#' {
 			handlers.ErrorHandler(w, http.StatusBadRequest, "The first column has a value that is not a list command, Please check the file")
+			return
+		}
+
+	}
+	// Checking First Row and it's filters
+	for i := 1; i <= 35; i++ {
+		j, _ := excelize.ColumnNumberToName(i)
+		cellrow, err := xlFile.GetCellValue(sheetName, j+"1")
+		if err != nil {
+			log.Println("hello")
+		}
+		if cellrow != "" {
+			log.Print(cellrow)
+		}
+		if cellrow != "" && cellrow[0] != '#' {
+			handlers.ErrorHandler(w, http.StatusBadRequest, "The first Row has a value that is not a list command, Please check the file")
 			return
 		}
 
@@ -86,6 +106,7 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 		handlers.ErrorHandler(w, http.StatusInternalServerError, "Error encoding JSON")
 		return
 	}
+	log.Println("Process-excel complete")
 
 	// Write the JSON response
 	w.Header().Set("Content-Type", "application/json")
