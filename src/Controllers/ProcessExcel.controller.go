@@ -3,7 +3,10 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+	handlers "xlsx/src/Handlers"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -12,8 +15,8 @@ type ExcelRow struct {
 	Cells []string `json:"cells"`
 }
 
+// ProcessExcel This is the main function that takes the excel and implements all the required logic on the excel and returns an searched and filtered excel
 func ProcessExcel(w http.ResponseWriter, r *http.Request) {
-	// Get the uploaded file from the request
 	// Setting Up the CORS header so that anybody from any port or host can hit the api
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
@@ -23,7 +26,7 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 
 	file, header, err := r.FormFile("excelFile")
 	if err != nil {
-		http.Error(w, "Error getting file: "+err.Error(), http.StatusBadRequest)
+		handlers.ErrorHandler(w, http.StatusBadRequest, "Error getting file "+err.Error())
 		return
 	}
 	defer file.Close()
@@ -31,7 +34,11 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("File Name: %s, Size: %d\n", header.Filename, header.Size)
 	xlFile, err := excelize.OpenReader(file)
 	if err != nil {
-		http.Error(w, "Error reading Excel file: "+err.Error(), http.StatusInternalServerError)
+		handlers.ErrorHandler(w, http.StatusInternalServerError, "Error reading Excel file:"+err.Error())
+		return
+	}
+	if xlFile.SheetCount > 1 {
+		handlers.ErrorHandler(w, http.StatusBadRequest, "The File has more than 1 sheet, Can't process file")
 		return
 	}
 	var rows []ExcelRow
@@ -41,9 +48,25 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 
 	sheetName := xlFile.GetSheetName(0)
 
+	for i, j := 1, ""; i <= 1000; i++ {
+		j = strconv.FormatInt(int64(i), 10)
+		cell, err := xlFile.GetCellValue(sheetName, "A"+j)
+		if err != nil {
+			log.Println("hello")
+		}
+		if cell != "" {
+			log.Print(cell)
+		}
+		if cell != "" && cell[0] != '#' {
+			handlers.ErrorHandler(w, http.StatusBadRequest, "The first column has a value that is not a list command, Please check the file")
+			return
+		}
+
+	}
+
 	rowsData, err := xlFile.GetRows(sheetName)
 	if err != nil {
-		http.Error(w, "Error getting rows: "+err.Error(), http.StatusInternalServerError)
+		handlers.ErrorHandler(w, http.StatusInternalServerError, "Error getting rows: ")
 		return
 	}
 
@@ -60,7 +83,7 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	// Marshal the response data into JSON
 	jsonData, err := json.Marshal(rows)
 	if err != nil {
-		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+		handlers.ErrorHandler(w, http.StatusInternalServerError, "Error encoding JSON")
 		return
 	}
 

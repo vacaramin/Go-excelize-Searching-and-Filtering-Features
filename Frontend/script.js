@@ -2,12 +2,14 @@ const excelFileInput = document.getElementById("excelFileInput");
 const processBtn = document.getElementById("processBtn");
 const tableBody = document.getElementById("tableBody");
 const tableHead = document.getElementById("tableHead");
+const loadingDiv = document.getElementById("loading-div");
 
 processBtn.addEventListener("click", async () => {
   // Prepare the FormData object to include the selected file
   const formData = new FormData();
   formData.append("excelFile", excelFileInput.files[0]);
 
+  loadingDiv.style.display = "flex";
   try {
     const response = await fetch("http://localhost:8080/process-excel", {
       method: "POST",
@@ -15,7 +17,19 @@ processBtn.addEventListener("click", async () => {
     });
 
     const result = await response.json();
+    if (result.error) {
+      // Clear the existing table rows and header
+      tableBody.innerHTML = "";
+      tableHead.innerHTML = ""; // Clear the table header
+      
+      // Display the error
+      displayError(result.error);
 
+      
+
+      // Return early to prevent populating the table
+      return;
+    }
     // Clear the existing table rows and header
     tableBody.innerHTML = "";
     tableHead.innerHTML = ""; // Clear the table header
@@ -42,6 +56,9 @@ processBtn.addEventListener("click", async () => {
   } catch (error) {
     console.error("Error processing Excel:", error);
     displayError(error.message)
+  } finally {
+    // Hide loading screen
+    loadingDiv.style.display = "none";
   }
 });
 
@@ -53,4 +70,9 @@ function displayError(message) {
   const outputDiv = document.getElementById("error-div");
   outputDiv.innerHTML = "";
   outputDiv.appendChild(errorDiv);
+
+  // Remove the error message after 3 seconds
+  setTimeout(() => {
+    outputDiv.innerHTML = "";
+  }, 2000); // 3000 milliseconds = 3 seconds
 }
