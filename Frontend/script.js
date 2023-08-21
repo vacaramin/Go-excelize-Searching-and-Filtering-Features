@@ -50,7 +50,7 @@ function displayError(message) {
   errorDiv.className = "error-message";
   errorDiv.textContent = message;
 
-  const outputDiv = document.getElementById("outputDiv");
+  const outputDiv = document.getElementById("error-div");
   outputDiv.innerHTML = "";
   outputDiv.appendChild(errorDiv);
 }
