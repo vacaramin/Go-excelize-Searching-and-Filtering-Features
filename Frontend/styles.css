@@ -123,3 +123,9 @@ tbody tr {
 td:last-child {
   border-right: none;
 }
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px;
+}

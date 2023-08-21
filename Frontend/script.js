@@ -41,5 +41,16 @@ processBtn.addEventListener("click", async () => {
     });
   } catch (error) {
     console.error("Error processing Excel:", error);
+    displayError(error.message)
   }
 });
+
+function displayError(message) {
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-message";
+  errorDiv.textContent = message;
+
+  const outputDiv = document.getElementById("outputDiv");
+  outputDiv.innerHTML = "";
+  outputDiv.appendChild(errorDiv);
+}
