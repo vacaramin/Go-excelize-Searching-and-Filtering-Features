@@ -19,6 +19,17 @@ type Filter_Column struct {
 	FilterName string `json:"filtername"`
 }
 
+var (
+	F   int
+	FM  int
+	FV  int
+	G1Y int
+	G3N int
+	C1N int
+	C2O int
+	C3S int
+)
+
 // ProcessExcel This is the main function that takes the excel and implements all the required logic on the excel and returns an searched and filtered excel
 func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 	// Setting Up the CORS header so that anybody from any port or host can hit the api
@@ -61,23 +72,50 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 		if cell != "" {
 			log.Print(cell)
 		}
+		if cell == "#F#" {
+			F = i
+		}
+
 		if cell != "" && cell[0] != '#' {
 			handlers.ErrorHandler(w, http.StatusBadRequest, "The first column has a value that is not a list command, Please check the file")
 			return
 		}
 
 	}
+	fmt.Println(" Filter Row = ", F)
 	// Checking First Row and it's filters
 	for i := 1; i <= 35; i++ {
 		j, _ := excelize.ColumnNumberToName(i)
-		cellrow, err := xlFile.GetCellValue(sheetName, j+"1")
+		cell, err := xlFile.GetCellValue(sheetName, j+"1")
 		if err != nil {
 			log.Println("hello")
 		}
-		if cellrow != "" {
-			log.Print(cellrow)
+		if cell != "" {
+			log.Print(cell)
+			if cell == "#FM#" {
+				FM = i
+			}
+			if cell == "#FV#" {
+				FV = i
+			}
+			if cell == "#G1Y#" {
+				G1Y = i
+			}
+			if cell == "#G3N#" {
+				G3N = i
+			}
+			if cell == "#C1N#" {
+				C1N = i
+			}
+			if cell == "#C2O#" {
+				C2O = i
+			}
+			if cell == "#C3S#" {
+				C3S = i
+			}
 		}
-		if cellrow != "" && cellrow[0] != '#' {
+
+		if cell != "" && cell[0] != '#' {
 			handlers.ErrorHandler(w, http.StatusBadRequest, "The first Row has a value that is not a list command, Please check the file")
 			return
 		}
