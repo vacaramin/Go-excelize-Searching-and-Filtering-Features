@@ -7,27 +7,20 @@ import (
 	"net/http"
 	"strconv"
 	handlers "xlsx/src/Handlers"
+	models "xlsx/src/Models"
 
 	"github.com/xuri/excelize/v2"
 )
 
-type ExcelRow struct {
-	Cells []string `json:"cells"`
-}
-type Filter_Column struct {
-	ColumnName string `json:"columnname"`
-	FilterName string `json:"filtername"`
-}
-
 var (
-	F   int
-	FM  int
-	FV  int
-	G1Y int
-	G3N int
-	C1N int
-	C2O int
-	C3S int
+	F   models.Filter
+	FM  models.Filter
+	FV  models.Filter
+	G1Y models.Filter
+	G3N models.Filter
+	C1N models.Filter
+	C2O models.Filter
+	C3S models.Filter
 )
 
 // ProcessExcel This is the main function that takes the excel and implements all the required logic on the excel and returns an searched and filtered excel
@@ -56,7 +49,7 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 		handlers.ErrorHandler(w, http.StatusBadRequest, "The File has more than 1 sheet, Can't process file")
 		return
 	}
-	var rows []ExcelRow
+	var rows []models.ExcelRow
 
 	// Iterate through the rows and build the response data
 	rowsLimit := 5 // Change this to the desired number of rows to process
@@ -73,7 +66,8 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 			log.Print(cell)
 		}
 		if cell == "#F#" {
-			F = i
+			F.Column = 1
+			F.Row = i
 		}
 
 		if cell != "" && cell[0] != '#' {
@@ -82,7 +76,7 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	fmt.Println(" Filter Row = ", F)
+	fmt.Println(" models.Filter Row = ", F)
 	// Checking First Row and it's filters
 	for i := 1; i <= 35; i++ {
 		j, _ := excelize.ColumnNumberToName(i)
@@ -93,25 +87,32 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 		if cell != "" {
 			log.Print(cell)
 			if cell == "#FM#" {
-				FM = i
+				FM.Column = i
+				FM.Row = 1
 			}
 			if cell == "#FV#" {
-				FV = i
+				FV.Column = i
+				FV.Row = 1
 			}
 			if cell == "#G1Y#" {
-				G1Y = i
+				G1Y.Column = i
+				G1Y.Row = 1
 			}
 			if cell == "#G3N#" {
-				G3N = i
+				G3N.Column = i
+				G3N.Row = 1
 			}
 			if cell == "#C1N#" {
-				C1N = i
+				C1N.Column = i
+				C1N.Row = 1
 			}
 			if cell == "#C2O#" {
-				C2O = i
+				C2O.Column = i
+				C1N.Row = 1
 			}
 			if cell == "#C3S#" {
-				C3S = i
+				C3S.Column = i
+				C3S.Row = 1
 			}
 		}
 
@@ -121,6 +122,14 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
+	fmt.Println(" models.Filter Row = ", FM)
+	fmt.Println(" FM= ", FM)
+	fmt.Println(" FV = ", FV)
+	fmt.Println(" G1Y = ", G1Y)
+	fmt.Println(" G3N = ", G3N)
+	fmt.Println(" C1N = ", C1N)
+	fmt.Println(" C2O = ", C2O)
+	fmt.Println(" C3S = ", C3S)
 
 	rowsData, err := xlFile.GetRows(sheetName)
 	if err != nil {
@@ -135,7 +144,7 @@ func ProcessExcel(w http.ResponseWriter, r *http.Request) {
 
 		rowCells := append([]string{}, row...)
 
-		rows = append(rows, ExcelRow{Cells: rowCells})
+		rows = append(rows, models.ExcelRow{Cells: rowCells})
 	}
 
 	// Marshal the response data into JSON
